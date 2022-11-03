@@ -1,5 +1,6 @@
 import React, {createContext, useState} from 'react';
 import {useHistory} from "react-router-dom";
+import jwtDecode from "jwt-decode";
 
 export const AuthContext = createContext({});
 
@@ -10,13 +11,30 @@ function AuthContextProvider({children}) {
     });
     const history = useHistory();
 
+    function login(token) {
+        console.log(token);
+        // DOOR CONTEXT:
+        // - Token opslaan in de localStorage
+        localStorage.setItem('token', token);
+        // Token decoden om te kijken wat er allemaal te vinden is
+        const decodedToken = jwtDecode(token);
+        console.log('decoded token:', decodedToken);
 
-    function login() {
-        console.log('Gebruiker is ingelogd');
+        //  -Indien nodig, nieuwe data opvragen van gebruiker
+        // Async function (get request) nodig om specifieke gegevens van gebruiker op te halen
+
+
+        // - Zorgen dat die gegevens worden opgeslagen in Context
+        // - Authentication naar true
+
         toggleIsAuth({
             ...isAuth,
             isAuth: true,
-            // user moet ook gevuld worden
+            user: {
+                email: decodedToken.email,
+                // Gebruikersnaam nog doen?
+                id: decodedToken.sub,
+            }
         });
         history.push('/profile');
     }
