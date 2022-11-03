@@ -5,8 +5,8 @@ import Profile from './pages/Profile';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-import './App.css';
 import {AuthContext} from "./context/AuthContext";
+import './App.css';
 
 function App() {
     const {isAuth} = useContext(AuthContext);
@@ -20,7 +20,7 @@ function App() {
                         <Home/>
                     </Route>
                     <Route path="/profile">
-                        {isAuth.isAuth ? <Profile/> : <Redirect to="/signup"/>}
+                        {isAuth ? <Profile/> : <Redirect to="/"/>}
                     </Route>
                     <Route exact path="/signin">
                         <SignIn/>

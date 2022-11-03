@@ -1,25 +1,32 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {AuthContext} from "../context/AuthContext";
 import axios from 'axios';
 
 function SignIn() {
-    const {isAuth, loginFunction} = useContext(AuthContext);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, toggleError] = useState(false);
+    const {login} = useContext(AuthContext);
 
     async function handleSubmit(e) {
         e.preventDefault();
+        toggleError(false);
+
         try {
             // 1. Het eindpoint wordt: http://localhost:3000/login
             // 2. We moeten de keys 'email' en 'password' meesturen
-            const response = await axios.post('http://localhost:3000/users', {
-                email: 'esther.jurna@novi.nl',
-                password: '234567',
+            const result = await axios.post('http://localhost:3000/login', {
+                email: email,
+                password: password,
             });
             // We krijgen een token terug
             // console.log(response.data.accessToken);
-            loginFunction(response.data.accessToken);
+            console.log(result.data);
+            login(result.data.accessToken);
         } catch (e) {
             console.error(e);
+            toggleError(true);
         }
     }
 
@@ -28,16 +35,38 @@ function SignIn() {
             <h1>Inloggen</h1>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias cum debitis dolor dolore fuga id
                 molestias qui quo unde?</p>
-            {isAuth.isAuth === false &&
                 <form onSubmit={handleSubmit}>
-                    <p>*invoervelden*</p>
+                    <label htmlFor="email-field">
+                        Emailadres:
+                        <input
+                            type="email"
+                            id="email-field"
+                            name="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </label>
+
+                    <label htmlFor="password-field">
+                        Wachtwoord:
+                        <input
+                            type="password"
+                            id="password-field"
+                            name="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </label>
+
+                    {error && <p className="error">Combinatie van emailadres en wachtwoord is onjuist</p>}
+
                     <button
                         type="submit"
+                        className="form-button"
                     >Inloggen
                     </button>
-                    <p>Heb je nog geen account? <Link to="/signup">Registreer</Link> je dan eerst.</p>
                 </form>
-            }
+            <p>Heb je nog geen account? <Link to="/signup">Registreer</Link> je dan eerst.</p>
         </>
     );
 }
